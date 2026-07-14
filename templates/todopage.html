@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'todocss/todo.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<body>
+    <div class="tasks">
+        <h1>Todo List</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div>
+                <input type="text" name="title" placeholder="Add Task" required>
+                <button type="submit" name="add_task">Add</button>
+            </div>
+        </form>
+
+        {% for t in td %}
+        <div>
+            <div id="text-{{t.id}}"> {{ forloop.counter }}. {{ t.title }}</div>
+
+            <form method="POST" id="edit-{{t.id}}" style="display: none">
+            {% csrf_token %}
+                <input type="hidden" name="task_id" value="{{t.id}}">
+                <input type="text" name="new_title" value="{{ t.title }}" required>
+                <button type="submit" name="edit_task">Edit</button>
+            </form>
+        </div>
+
+        <div>
+            <button type="button" onclick="enableEdit({{t.id}})">change</button>
+
+            <form method="POST">
+            {% csrf_token %}
+                <input type="hidden" name="task_id" value="{{t.id}}">
+                <button type="submit" name="delete_task">Delete</button>
+            </form>
+        </div>
+        {% empty %}
+            <p>No Task</p>
+        {% endfor %}
+
+        <div class="footer">
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" name="clear_task">Clear</button>
+            </form>
+
+            <p>You have total {{ count }} task.</p>
+        </div>
+    </div>
+<script>
+    function enableEdit(id){
+        document.getElementById("text-"+id).style.display="none";
+        document.getElementById("edit-"+id).style.display="flex";
+    }
+</script>
+</body>
+</html>
